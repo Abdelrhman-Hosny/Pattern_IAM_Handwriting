@@ -3,14 +3,14 @@ import numpy as np
 
 
 
-def extract_writer_width(img , f2):
+def extract_writer_width(line , f2):
 
     # From Paper : Writer Identification Using Text Line Based Features
     # Authors : U.-V. Marti, R. Messerli and H. Bunke
 
 
     # Input has to be thresholded
-    _ , threshed = cv2.threshold(img , 200 , 255 , cv2.THRESH_BINARY_INV|cv2.THRESH_OTSU)
+    _ , threshed = cv2.threshold(line , 200 , 255 , cv2.THRESH_BINARY_INV|cv2.THRESH_OTSU)
 
     projection = np.sum(threshed/np.max(threshed),1)
 
@@ -39,5 +39,5 @@ def extract_writer_width(img , f2):
 
     return  f1  #, f3
 
-    
+
 
