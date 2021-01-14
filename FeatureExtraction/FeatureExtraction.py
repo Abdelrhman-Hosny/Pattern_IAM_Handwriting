@@ -42,6 +42,10 @@ def extract_writer_width(line , f2):
 
 
 def extract_base_line(lineImg):
+
+    # From Paper : Writer Identification Using Text Line Based Features
+    # Authors : U.-V. Marti, R. Messerli and H. Bunke
+
     # Line image has to be threshed in order to reduce noise
     _ , threshed = cv2.threshold(lineImg , 200 , 255 ,cv2.THRESH_BINARY_INV|cv2.THRESH_OTSU)
 
@@ -62,7 +66,7 @@ def extract_base_line(lineImg):
 
     # Variables are named according to the paper so if you dont understand
     # feel free to have a look ;)
-    
+
     upper_baseline = int(mu - std_dev)
     lower_baseline = int(mu + std_dev)
 
