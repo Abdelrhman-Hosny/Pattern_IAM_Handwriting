@@ -125,6 +125,8 @@ def extract_base_line(lineImg):
     f6 = f2/f3
 
     return np.array([f1,f2,f3,f4,f5,f6])
+
+
 def extract_slant_features (line ):
     ######## These set of features are extracted based on This Paper : ##########
     ####### Writer Identification Using Edge-Based Directional Features #########
@@ -170,13 +172,10 @@ def extract_slant_features (line ):
 
 def extract_all_features(line,n_features):
 
-    X = np.empty((0,n_features),dtype=np.float64)
+    # X = np.empty((0,n_features),dtype=np.float64)
 
-    X = np.hstack(X,extract_base_line(line))
+    X = extract_base_line(line)
     X = np.hstack((X,extract_writer_width(line,X[1])))
     X = np.hstack((X,extract_slant_features(line)))
 
     return X
-
-
-
