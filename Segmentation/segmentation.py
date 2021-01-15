@@ -50,11 +50,14 @@ def get_lines_positions(bin_img):
     unique_indexes, _ = remove_duplicates(staff_lines_img)
     return unique_indexes
 
-def get_writtig_area(bin_img):
+def get_writtig_area(gs_img_croped ,bin_img):
     #this function assume perfect input only 3 lines are in the image and crop
-    lines  =get_lines_positions(bin_img)
-    print(lines)
-    croped =bin_img[lines[1]+10:lines[2]-3,: ]
+    
+    lines  =get_valid_line_limits(gs_img_croped)
+    # print(lines)
+    croped =np.copy(bin_img)
+    if (len(lines)==3):
+        croped =bin_img[lines[1][1]+10:lines[2][0]-10,: ]
     return croped
 
 def get_writing_lines_limits(croped):
@@ -88,21 +91,21 @@ def get_writing_lines_limits(croped):
 
 rho = 10 # distance resolution in pixels of the Hough grid
 theta = np.pi / 180  # angular resolution in radians of the Hough grid
-threshold = 50  # minimum number of votes (intersections in Hough grid cell)
+threshold = 150  # minimum number of votes (intersections in Hough grid cell)
 min_line_length = 350  # minimum number of pixels making up a line
-max_line_gap = 5# maximum gap in pixels between connectable line segments
+max_line_gap = 10# maximum gap in pixels between connectable line segments
 
 
 
 def ShowImage(name,formName='image'):
     res = cv2.resize(name,(768,768))
     cv2.imshow(formName,res)
-    cv2.waitKey(0);
+    cv2.waitKey(0)
 
 def GetLinesP(img):
     blur_gauss = cv2.GaussianBlur(img,(5,5),0)
     _ , threshed = cv2.threshold(blur_gauss , 200 , 255 , cv2.THRESH_BINARY_INV|cv2.THRESH_OTSU)
-    ShowImage(threshed)
+    # ShowImage(threshed)
     line_image = np.copy(img) * 0  # creating a blank to draw lines on
     
     lines = cv2.HoughLinesP(threshed, rho, theta, threshold, np.array([]),
@@ -131,3 +134,18 @@ def AllFunctionalitiesP(img,printLine = False ):
     lines_edges = cv2.addWeighted(img, 0.8, line_image, 1, 0)
 
     return lines_edges , lines
+
+def get_valid_line_limits(gs_img_croped):
+    _,lines_x =AllFunctionalitiesP(gs_img_croped)
+    lines=[]
+    for line in lines_x:
+      for _,y,_,y1  in line:
+         lines.append((y,y1))
+    # print(lines)
+    lines = np.sort(lines, axis=0)
+    valid_lines =[lines[0]]
+    for i in range (1,len(lines)):
+        if lines[i][0] -lines[i-1][0] >100 and lines[i][1] -lines[i-1][1] >100:
+            valid_lines.append(lines[i])
+
+    return valid_lines

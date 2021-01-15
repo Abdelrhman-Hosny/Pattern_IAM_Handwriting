@@ -125,7 +125,46 @@ def extract_base_line(lineImg):
     f6 = f2/f3
 
     return np.array([f1,f2,f3,f4,f5,f6])
+def extract_slant_features (line ):
+    ######## These set of features are extracted based on This Paper : ##########
+    ####### Writer Identification Using Edge-Based Directional Features #########
 
+
+    #apply canny filter to get image edges
+    edges = 255 - cv2.Canny(line, 0, 250)
+        
+    plt.figure(figsize=(10,20))
+    io.imshow(cv2.Canny(line, 0, 250),cmap="gray")
+    plt.figure(figsize=(10,20))
+    io.imshow(edges,cmap="gray")
+    line_inverted = 1 - (edges / np.max(line))
+    features = []
+    
+    process_line = line_inverted [2:line.shape[0]-2,2:line.shape[1]-2 ]
+    plt.figure(figsize=(10,20))
+    io.imshow(line_inverted,cmap="gray")
+    plot_h_proj(line_inverted)
+    # get black pixels
+    y_mask, x_mask = np.where(process_line == 1)
+    # get slant features
+    
+    features.append(np.sum(line_inverted[y_mask +1, x_mask]))
+    features.append(np.sum(line_inverted[y_mask +2, x_mask]))
+
+    features.append(np.sum(line_inverted[y_mask - 1, x_mask]))
+    features.append(np.sum(line_inverted[y_mask - 2, x_mask]))
+    # print(line_inverted[y_mask - 1, x_mask])
+    features.append(np.sum(line_inverted[y_mask + 1, x_mask + 1]))
+    features.append(np.sum(line_inverted[y_mask + 1, x_mask + 2]))
+    features.append(np.sum(line_inverted[y_mask + 2, x_mask + 1]))
+    features.append(np.sum(line_inverted[y_mask + 2, x_mask + 2]))
+
+    features.append(np.sum(line_inverted[y_mask - 1, x_mask + 1]))
+    features.append(np.sum(line_inverted[y_mask - 1, x_mask + 2]))
+    features.append(np.sum(line_inverted[y_mask - 2, x_mask + 1]))
+    features.append(np.sum(line_inverted[y_mask - 2, x_mask + 2]))
+  
+    return features/np.sum(features)
 
 
 
