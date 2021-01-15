@@ -79,4 +79,55 @@ def get_writing_lines_limits(croped):
             line_valid_limits.append((start,end))
             # io.imshow(croped[start:end,:])
     return line_valid_limits
-  
+
+
+
+# ----------------------------------------------------------------
+#Functions
+# houghlines variables
+
+rho = 10 # distance resolution in pixels of the Hough grid
+theta = np.pi / 180  # angular resolution in radians of the Hough grid
+threshold = 50  # minimum number of votes (intersections in Hough grid cell)
+min_line_length = 350  # minimum number of pixels making up a line
+max_line_gap = 5# maximum gap in pixels between connectable line segments
+
+
+
+def ShowImage(name,formName='image'):
+    res = cv2.resize(name,(768,768))
+    cv2.imshow(formName,res)
+    cv2.waitKey(0);
+
+def GetLinesP(img):
+    blur_gauss = cv2.GaussianBlur(img,(5,5),0)
+    _ , threshed = cv2.threshold(blur_gauss , 200 , 255 , cv2.THRESH_BINARY_INV|cv2.THRESH_OTSU)
+    ShowImage(threshed)
+    line_image = np.copy(img) * 0  # creating a blank to draw lines on
+    
+    lines = cv2.HoughLinesP(threshed, rho, theta, threshold, np.array([]),
+                        min_line_length, max_line_gap)
+    return lines , line_image
+
+    
+def drawLines(lines , imgToDrawOn):
+    
+    for line in lines:
+        for x1,y1,x2,y2 in line:
+            cv2.line(imgToDrawOn,(x1,y1),(x2,y2),(255,0,0),5)
+
+def printLines(lines):
+    print(lines.shape[0])
+    for line in lines:
+        for x1,y1,x2,y2 in line:
+            print("Start : ( {} , {} ) , End : ( {} , {} ) ".format(x1,y1,x2,y2))
+
+
+def AllFunctionalitiesP(img,printLine = False ):
+
+    lines , line_image = GetLinesP(img)
+    drawLines(lines,line_image)
+    if(printLine) : printLines(lines)
+    lines_edges = cv2.addWeighted(img, 0.8, line_image, 1, 0)
+
+    return lines_edges , lines
