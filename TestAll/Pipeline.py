@@ -2,8 +2,7 @@ from segmentation import *
 import numpy as np
 import os
 import time
-# from segmentation import *
-from FeatureExtraction import extract_all_features
+from FeatureExtraction import extract_for_visualization,extract_all_features
 from scipy.stats import mode
 import cv2
 from sklearn.preprocessing import StandardScaler
@@ -18,7 +17,7 @@ class Pipeline:
         self.Time_Pred = []
         self.Test_Pred = []
 
-        self.modelSave = []
+        self.trainAcc = []
         # num of features extracted by model
         self.num_features = num_features
 
@@ -28,6 +27,7 @@ class Pipeline:
         # set model that'll be run in here
         self.model = model
 
+        self.tester = 1
 
     def createFileFromArr(self):
         # Write the time of each iteration
@@ -43,11 +43,11 @@ class Pipeline:
         f = open(os.path.join(self.path,'results.txt'),"w+")
 
         for elem in self.Test_Pred:
-            f.write('{} \n'.format(elem[0]))
+            f.write('{} \n'.format(int(elem)))
 
         f.close()
 
-    def ExtractFeaturesFromDirectory(self,rootDir,ClassesDirectories,test_image_path):
+    def ExtractFeaturesFromDirectory(self,rootDir,ClassesDirectories,test_image_path,DataVis=False):
 
         # time starts before preprocessing and ends after prediction
         self.start_time = time.time()
@@ -61,8 +61,10 @@ class Pipeline:
         Lines , n_line_test = self.ImgToLines(os.path.join(rootDir,test_image_path))
 
         # Feature Extraction phase
-        for line in Lines:
-            X = np.vstack((X , self.extract_all_feat(line)))
+        if (not DataVis):
+            for line in Lines:
+                X = np.vstack((X , self.extract_all_feat(line)))
+        else: n_line_test = 0
 
 
         # Repeat the following for the train data
@@ -73,7 +75,8 @@ class Pipeline:
                 Lines , n_lines = self.ImgToLines(os.path.join(root3,image))
                 y_train = np.vstack(   (y_train ,np.ones((n_lines,1)) * WriterID )  )
                 for line in Lines:
-                    X = np.vstack((X,self.extract_all_feat(line)))
+                    if (not DataVis): X = np.vstack((X,self.extract_all_feat(line)))
+                    else: X = np.vstack((X,extract_for_visualization(line)))
 
                     
 
@@ -98,11 +101,12 @@ class Pipeline:
 
             pred = self.FitAndPredict( X_train , y_train , X_test)
 
+            
+
             self.Test_Pred.append(pred)
             self.Time_Pred.append(time.time() - self.start_time)
 
         self.createFileFromArr()
-        return self.modelSave
 
     def ImgToLines(self,imgPath):
         
@@ -131,11 +135,30 @@ class Pipeline:
         self.model.fit(X_train,np.ravel(y_train))
 
 
-        pred = mode(self.model.predict(scaler.transform(X_test)))
+        pred = mode(self.model.predict(scaler.transform(X_test)))[0]
 
+#---------------------------------------------------------------------------------------
+# Will remove after training
+
+        train_pred = self.model.predict(X_train)
+        acc_train = np.sum( np.ravel(train_pred) == np.ravel(y_train))/ y_train.size
         
-
+        self.trainAcc.append(acc_train)
+#---------------------------------------------------------------------------------------
         return pred
 
     def extract_all_feat(self,line):
-        return extract_all_features(line,self.num_features)
+        return extract_all_features(line)
+
+
+
+    def getFeaturesFromSelectedDirectory(self,dirNum):
+        
+        path_dir = os.path.join(self.path,'data')
+        root , subdir , subfiles = next(os.walk(path_dir))
+
+        root2 , classesDir , test_image = next(os.walk(os.path.join(root,str(dirNum))))
+
+        
+
+        return self.ExtractFeaturesFromDirectory(root2,classesDir,test_image[0],True)

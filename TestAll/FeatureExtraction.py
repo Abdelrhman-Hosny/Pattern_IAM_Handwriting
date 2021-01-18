@@ -170,10 +170,20 @@ def extract_slant_features (line ):
 
 
 
-def extract_all_features(line,n_features):
+def extract_all_features(line):
 
-    # X = np.empty((0,n_features),dtype=np.float64)
+    
 
+    X = extract_base_line(line)
+    X = np.hstack((X,extract_writer_width(line,X[1])))
+    X = np.hstack((X,extract_slant_features(line)))
+    X = X /  line.size # Normalize by line size so that all image sizes are treated equally
+
+    return X[3:]
+
+def extract_for_visualization(line):
+
+    
     X = extract_base_line(line)
     X = np.hstack((X,extract_writer_width(line,X[1])))
     X = np.hstack((X,extract_slant_features(line)))
