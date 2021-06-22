@@ -24,9 +24,7 @@
 
    1. **<u>Baseline features</u>**
 
-      This feature can be easily explained from an image that is taken from the paper 
-
-      ​	***Writer Identification Using Text Line Based Features*** - *U.-V. Marti, R. Messerli and H. Bunke*
+      Paper: ***Writer Identification Using Text Line Based Features*** - *U.-V. Marti, R. Messerli and H. Bunke*
 
       ![img](https://lh6.googleusercontent.com/VBcI-nG0x93n64z-2Q0_We5huQ_yopDhdmw7g604PcwM5xQchmOIksPd4DrX6Txy51Kh8sznK428XUD3mcOeeItOMb4dg42JCaNYmQeskW0ZHNP-8n_lEi8-n4Mgpr1WaToHuwTu)
 
@@ -34,11 +32,15 @@
 
    2. **<u>Width Between each letter and the next</u>**
 
+      Paper: ***Writer Identification Using Text Line Based Features*** - *U.-V. Marti, R. Messerli and H. Bunke*
+
       **![img](https://lh6.googleusercontent.com/r81HY24wJvP1v6HSZ65vhenBr785H4MPSCP4_bqrwlrGeh4APijvDWHK4Zpn9fhOUPWBf7wYFn_m_7COWoKqQRGVQHFkzGXHgCGHpjTOSwrY7K_5kLH1MDvbxMcvBSAJ3ZgXdt0f)**
 
       This feature computes the distance between each line and the next
 
    3. <u>**Slant Feature**</u>
+
+      Paper: **Writer Identification Using Edge-Based Directional Features** 
 
       ![img](https://lh4.googleusercontent.com/hpZbZGyC6ZlT9awhp039a454WWuZvwU-b9c1Xji2ahF53aGkHF0TEy1bAEdmnRhhyaS3xlFaZKZWRZKAMRnuQro-jd_qSK5z_wVz-O5fzhO0VSnyX-Wv3YGcEUyKj983vlfWhnxX)
 
